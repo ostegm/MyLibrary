@@ -2,3 +2,10 @@ language: node_js
 node_js: node
 services:
 - mongodb
+deploy:
+  provider: heroku
+  api_key:
+    secure: IRRcNqQZ0ggeOxLrzM2vLK59M1CmHkY7POhX0/wnOfIasl6TSIxIAbEjN5oDR6k5uUQcnEF6J/Qql6wEx4lUefb6XhZmHtPKbumZ0FMoL/vJuL8gT3U2cVdlvhMfwhHztilYioW6gA4j29A1HaSLjbmptpx2yDYFFWtSQk/GVd5BfddTBWoiHDCqlWHjsE3vsf/FSzj8N59r4q0vmP8WI/ITJQBLtjTXat5ybI4jAQ+07wPCPsvvHjzktOiLtpws98e4ztOQoikdSgGKSKYkgK784gADVjr6dYPrIgO3dmKsK5DsGikzl0zoi56wjKTce3mMoP1ZIxQCcAQ5CTAAaVdaYigTp2v6LlY6pxKBXjzXv1yR25IfCPEZjzsjcwM8shx+RxU2ZivW4S2Nrr3kNy0wu99ZtM8kEFeEBZLLMfh3tW2N7AMUBX/6pEMv+Nbo278FnFvo0a0u7USi2e/YcYJslsiyFksO3s0bR0kZQ/+aLipw+LhGPFXmd3b1KsokIrwaXWQuRu3Iw6Ji1X9QG3qNmrCur3f7Cu0EviyP+B7ku8ymExTJDxejO6BYhTVycPikuM3UmyMHbly5hRItucBj92y7+eIIav6QFUB9DtKpxMDFVxaXDBubt5B3L7POcLSInfbd+yK5HbiVidR3LxJ57zsrIF2HYucyk/UiFHk=
+  app: arcane-meadow-16173
+  on:
+    repo: ostegm/BusAlarm
