@@ -1,0 +1,38 @@
+{
+  "name": "busalarm",
+  "version": "1.0.0",
+  "description": "A web app for alerting users when their bus is coming.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "mocha --exit"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ostegm/BusAlarm.git"
+  },
+  "author": "otto stegmaier",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ostegm/BusAlarm/issues"
+  },
+  "homepage": "https://github.com/ostegm/BusAlarm#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.0",
+    "body-parser": "^1.15.2",
+    "dotenv": "^4.0.0",
+    "express": "^4.14.0",
+    "jsonwebtoken": "^7.4.1",
+    "mongoose": "^5.0.6",
+    "morgan": "^1.7.0",
+    "passport": "^0.3.2",
+    "passport-jwt": "^2.2.1",
+    "passport-local": "^1.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.0.1",
+    "chai-http": "^3.0.0",
+    "faker": "^3.1.0",
+    "mocha": "^4.0.1"
+  }
+}
