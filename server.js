@@ -5,15 +5,13 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 
-const { PORT, DATABASE_URL } = require('./config');
+const {PORT, DATABASE_URL} = require('./config');
+const {router: usersRouter} = require('./users');
 
 const app = express();
 
-// Logging
 app.use(morgan('common'));
-
-// CORS
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
@@ -25,10 +23,12 @@ app.use(function (req, res, next) {
 
 app.use(express.static('public'));
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, './public', 'index.html'))
+  res.sendFile(path.join(__dirname, './public', 'index.html'));
 });
+app.use('/api/users/', usersRouter);
+
 app.use('*', (req, res) => {
-  return res.status(404).json({ message: 'Not Found' });
+  return res.status(404).json({message: 'Not Found'});
 });
 
 // Referenced by both runServer and closeServer. closeServer
