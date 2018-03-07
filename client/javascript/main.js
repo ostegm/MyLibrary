@@ -1,30 +1,28 @@
 'use strict';
 
-const BA__ = {};
+(function($) {
+      
+  var app = $.sammy('#app', function() {
 
-BA__.routes = {
-  '': 'views/home.html',
-  '#': 'views/home.html',
-  '#login': 'views/login.html'
-};
-
-BA__.loadRoute = function(path) {
-  const route = path || window.location.hash;
-  $('#app').load(this.routes[route], function() {
-    BA__.main();
-  });
-};
-
-BA__.watchInternalRoutes = function() {
-  $('.internal-link').on('click', e => {
-      console.log(e.target.hash);
-      BA__.loadRoute(e.target.hash);
-      e.preventDefault();
+   this.get('#/', function(context) {
+      context.app.swap('');
+      context.render('views/home.html').appendTo(context.$element());
     });
-}
+   
+   this.get('#/login/', function(context) {
+      context.app.swap('');
+      context.render('views/login.html').appendTo(context.$element());
+    });
 
-BA__.main =  function() {
-  BA__.loadRoute();
-};
+  this.get('#/signup/', function(context) {
+      context.app.swap('');
+      context.render('views/signup.html').appendTo(context.$element());
+    });
 
-$(() => BA__.main());
+  });
+
+  $(function() {
+    app.run('#/');
+  });
+
+})(jQuery);

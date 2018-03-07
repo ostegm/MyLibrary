@@ -3,14 +3,30 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" type="text/css" href="/assets/stylesheets/main.css">
-	<script
-	  src="https://code.jquery.com/jquery-3.3.1.js"
-	  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
-	  crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/sammy.js/0.7.6/sammy.min.js"></script>
 	<script type="text/javascript" src="/javascript/main.js"></script>
   <title>BusAlarm</title>
 </head>
 <body>
-  <div id="app"></div>
+  <div class="header-container">
+    <header class="wrapper clearfix">
+      <nav>
+        <ul>
+          <li><a href="#/">Home</a></li>
+          <li><a href="#/login/">Login</a></li>
+          <li><a href="#/signup/">Signup</a></li>
+        </ul>
+      </nav>
+    </header>
+  </div>
+ 
+  <div class="main-container">
+    <div class="main wrapper clearfix">
+      <div id="app">
+      <!-- template will be injected here -->
+      </div>
+    </div>
+  </div>
 </body>
 </html>
