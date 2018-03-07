@@ -21,14 +21,14 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.use(express.static('public'));
+app.use(express.static('client'));
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, './public', 'index.html'));
+  res.sendFile(path.join(__dirname, './client', 'index.html'));
 });
 app.use('/api/users/', usersRouter);
 
 app.use('*', (req, res) => {
-  return res.status(404).json({message: 'Not Found'});
+  return res.status(404).json({status: 404, message: 'Not Found'});
 });
 
 // Referenced by both runServer and closeServer. closeServer
