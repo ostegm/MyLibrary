@@ -1,12 +1,11 @@
 'use strict';
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
-require('mongoose-type-email');
 
 mongoose.Promise = global.Promise;
 
 const UserSchema = mongoose.Schema({
-  email: {type: mongoose.SchemaTypes.Email, required: true, unique: true},
+  email: {type: String, required: true, unique: true},
   password: {type: String, required: true},
   cellphone: {type: Number, required: true}
 });
