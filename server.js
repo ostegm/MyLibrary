@@ -3,10 +3,15 @@ require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
+const passport = require('passport');
 mongoose.Promise = global.Promise;
 
 const {PORT, DATABASE_URL} = require('./config');
 const {router: usersRouter} = require('./users');
+const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
+passport.use(localStrategy);
+passport.use(jwtStrategy);
+const jwtAuth = passport.authenticate('jwt', { session: false });
 
 const app = express();
 
@@ -25,7 +30,18 @@ app.use(express.static('public'));
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, './public', 'index.html'));
 });
+
+// Routers
 app.use('/api/users/', usersRouter);
+app.use('/api/auth/', authRouter);
+
+// Protected endpoint for testing.
+app.get('/api/protected', jwtAuth, (req, res) => {
+  return res.json({
+    data: 'rosebud'
+  });
+});
+
 
 app.use('*', (req, res) => {
   return res.status(404).json({message: 'Not Found'});
