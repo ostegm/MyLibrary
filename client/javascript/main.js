@@ -1,50 +1,56 @@
 'use strict';
 
+const TOKEN = localStorage.getItem('TOKEN');
+// console.log(`Token: ${TOKEN}`)
+
 (function($) {
-      
   var app = $.sammy('#app', function() {
 
-   this.get('#/', function(context) {
+    this.get('#/', function(context) {
       context.app.swap('');
       context.render('views/home.html').appendTo(context.$element());
     });
-   
-   this.get('#/login/', function(context) {
+
+    this.get('#/login/', function(context) {
       context.app.swap('');
       context.render('views/login.html').appendTo(context.$element());
     });
 
-  this.post('#/login/', function(context) {
+    this.get('#/dashboard/', function(context) {
+      context.app.swap('');
+      context.render('views/login-success.html').appendTo(context.$element());
+    });
+
+    this.post('#/login/', function(context) {
       const reqData = {
         email: this.params['user-email'],
         password: this.params['user-password'],
       };
       const reqSettings = {
-          data : JSON.stringify(reqData),
-          contentType : 'application/json',
-          type : 'POST',
-      };
-      $.ajax('/auth/login', reqSettings)
+          data: JSON.stringify(reqData),
+          contentType: 'application/json',
+          type: 'POST',
+        };
+      $.ajax('/api/auth/login', reqSettings)
         .done(function(resData) {
-          console.log(resData);
+          localStorage.setItem('TOKEN', resData.authToken);
           // TODO - Add user email to template.
           // TODO - Modify nav to reflect logged in user.
-          context.app.swap('');
-          context.render('views/login-success.html')
-            .appendTo(context.$element());
+          // TODO - Add global header https://api.jquery.com/jquery.ajaxsetup/
+          context.redirect('#/dashboard/');
         })
         .fail(function(msg) {
           // Todo - Make nice error message
           alert(msg.responseText);
-      });
+        });
     });
 
-  this.get('#/signup/', function(context) {
+    this.get('#/signup/', function(context) {
       context.app.swap('');
       context.render('views/signup.html').appendTo(context.$element());
     });
 
-  this.post('#/signup/', function(context) {
+    this.post('#/signup/', function(context) {
       const cell = this.params['user-cellphone'].replace('-', '').trim();
       const reqData = {
         email: this.params['user-email'],
@@ -52,10 +58,10 @@
         cellphone: parseInt(cell),
       };
       const reqSettings = {
-          data : JSON.stringify(reqData),
-          contentType : 'application/json',
-          type : 'POST',
-      };
+          data: JSON.stringify(reqData),
+          contentType: 'application/json',
+          type: 'POST',
+        };
       $.ajax('/api/users', reqSettings)
         .done(function(resData) {
           console.log(resData);
@@ -67,7 +73,18 @@
         .fail(function(msg) {
           // Todo - Make nice error message
           alert(msg.responseText);
-      });
+        });
+    });
+
+    this.get('#/protected/', function(context) {
+      context.app.swap('');
+      context.render('views/login.html').appendTo(context.$element());
+    });
+
+    this.get('#/logout/', function(context) {
+      localStorage.removeItem('TOKEN')
+      context.app.swap('');
+      context.render('views/login.html').appendTo(context.$element());
     });
 
   });
