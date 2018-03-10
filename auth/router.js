@@ -29,4 +29,8 @@ router.post('/refresh', jwtAuth, (req, res) => {
   res.json({authToken});
 });
 
+router.post('/validate', jwtAuth, (req, res) => {
+  res.json({valid: true});
+});
+
 module.exports = {router};
