@@ -135,3 +135,22 @@ button[type="submit"]:focus {
 .footer a:hover {
   color: #E7F1F9; 
 }
+
+
+#flash-message {
+  width:400px;
+  min-height: 30px;
+  background: #CCCCCC;
+  color:#060;
+  line-height:30px;
+  border:1px solid #808080;
+  font-family:arial, helvetica, sans-serif;
+  font-size:12pt;
+  margin-top:30px;
+}
+
+#flash-message span {
+  text-align: center;
+  margin-top: 20px;
+  color: black;
+}

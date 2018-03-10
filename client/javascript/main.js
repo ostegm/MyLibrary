@@ -1,10 +1,50 @@
 'use strict';
 
-const TOKEN = localStorage.getItem('TOKEN');
-// console.log(`Token: ${TOKEN}`)
+function flashMessage(message, timemout=1000) {
+  const template = '<div id="flash-message"><span>{{message}}</span></div>';
+  const noticeHtml = Mustache.to_html(template, {message});
+  const notice = $(noticeHtml);
+  notice.css('position', 'absolute');
+  notice.css('z-index', 1050);
+  $('body').append(notice.hide());
+  notice.css('left', ($('body').width() / 2) - (notice.width() / 2)) + 'px';
+  notice.css('top', $(window).scrollTop() + 'px');
+  notice.fadeIn();
+  function removeNotice() { 
+    notice.fadeOut(function() {
+      notice.remove();
+    });
+  }
+  setTimeout(removeNotice, timemout);
+}
+
+function testProtectedEndpoint() {
+  $.get('/api/protected', res => {
+    console.log('Successfully reached protected endpoint.');
+  }).catch(err => {
+    console.log('Cant reach protected endpoint.');
+  });
+}
+
+
+function setHeaderToken(token) {
+  $.ajaxSetup({
+    beforeSend: function (xhr)
+    {
+       xhr.setRequestHeader('Authorization', `Bearer ${token}`);        
+    }
+  });
+}
 
 (function($) {
+  // Define our app.
   var app = $.sammy('#app', function() {
+    let TOKEN = localStorage.getItem('TOKEN') || null;
+    if (TOKEN) {
+      console.log('Loaded token from local storage.');
+      setHeaderToken(TOKEN);
+    }
+    this.use('Mustache', 'html');
 
     this.get('#/', function(context) {
       context.app.swap('');
@@ -16,9 +56,19 @@ const TOKEN = localStorage.getItem('TOKEN');
       context.render('views/login.html').appendTo(context.$element());
     });
 
-    this.get('#/dashboard/', function(context) {
+    this.get('#/login-required/', function(context) {
       context.app.swap('');
-      context.render('views/login-success.html').appendTo(context.$element());
+      context.render('views/login.html').appendTo(context.$element());
+      flashMessage('You must be logged in to view the dashboard.', 5000);
+    });
+
+    this.get('#/dashboard/', function(context) {
+      if (!TOKEN) {
+        context.redirect('#/login-required/');
+      } else {
+        context.app.swap('');
+        context.render('views/dashboard.html').appendTo(context.$element());
+      }     
     });
 
     this.post('#/login/', function(context) {
@@ -33,15 +83,13 @@ const TOKEN = localStorage.getItem('TOKEN');
         };
       $.ajax('/api/auth/login', reqSettings)
         .done(function(resData) {
-          localStorage.setItem('TOKEN', resData.authToken);
-          // TODO - Add user email to template.
-          // TODO - Modify nav to reflect logged in user.
-          // TODO - Add global header https://api.jquery.com/jquery.ajaxsetup/
+          TOKEN = resData.authToken;
+          localStorage.setItem('TOKEN', TOKEN);
+          setHeaderToken(TOKEN);
           context.redirect('#/dashboard/');
-        })
-        .fail(function(msg) {
-          // Todo - Make nice error message
-          alert(msg.responseText);
+          })
+        .fail(function() {
+          flashMessage('Something went wrong, try again?');
         });
     });
 
@@ -62,17 +110,21 @@ const TOKEN = localStorage.getItem('TOKEN');
           contentType: 'application/json',
           type: 'POST',
         };
+      // Create a user, and when complete, login and redirect.
       $.ajax('/api/users', reqSettings)
-        .done(function(resData) {
-          console.log(resData);
-          context.app.swap('');
-          // TODO - Add user email to template.
-          context.render('views/signup-success.html')
-            .appendTo(context.$element());
+        .done(function() {
+          $.ajax('/api/auth/login', reqSettings)
+            .done(function(resData) {
+              TOKEN = resData.authToken;
+              localStorage.setItem('TOKEN', TOKEN);
+              setHeaderToken(TOKEN);
+              context.redirect('#/dashboard/');
+            });
         })
         .fail(function(msg) {
-          // Todo - Make nice error message
-          alert(msg.responseText);
+          console.log(msg);
+          const error = msg.responseJSON.message;
+          flashMessage(`Something went wrong: ${error}`, 20000);
         });
     });
 
@@ -82,7 +134,9 @@ const TOKEN = localStorage.getItem('TOKEN');
     });
 
     this.get('#/logout/', function(context) {
-      localStorage.removeItem('TOKEN')
+      TOKEN = null;
+      localStorage.removeItem('TOKEN');
+      setHeaderToken(null);
       context.app.swap('');
       context.render('views/login.html').appendTo(context.$element());
     });
