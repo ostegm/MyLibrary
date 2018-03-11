@@ -1,4 +1,7 @@
 'use strict';
+const NEXTBUSURL = 'http://webservices.nextbus.com/service/publicXMLFeed?';
+const x2js = new X2JS();
+
 
 function flashMessage(message, timemout=1000) {
   const template = '<div id="flash-message"><span>{{message}}</span></div>';
@@ -128,11 +131,6 @@ function setHeaderToken(token) {
         });
     });
 
-    this.get('#/protected/', function(context) {
-      context.app.swap('');
-      context.render('views/login.html').appendTo(context.$element());
-    });
-
     this.get('#/logout/', function(context) {
       TOKEN = null;
       localStorage.removeItem('TOKEN');
@@ -140,6 +138,16 @@ function setHeaderToken(token) {
       context.app.swap('');
       context.render('views/login.html').appendTo(context.$element());
     });
+
+    this.get('#/add-book/', function(context) {
+      context.app.swap('');
+      context.render('views/add-book.html').appendTo(context.$element());
+    });
+
+    this.post('#/add-book/', function(context) {
+      console.log(this.params)
+    });
+
 
   });
 
