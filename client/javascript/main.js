@@ -79,11 +79,12 @@ function setHeaderToken(token) {
       } else {
         context.app.swap('');
         context.render('views/dashboard.html').appendTo(context.$element());
+        let rendered;
         $.get('/api/library')
           .done(function(books) {
-            $.each(books, function(i, book) {
-              context.render('views/book.html', book)
-                .appendTo(context.$element());
+            $.each(books, async function(i, book) {
+              rendered = await context.render('views/book.html', book)
+              $('tbody').append(rendered);
             });
           })
           .fail( function() {
