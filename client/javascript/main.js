@@ -54,6 +54,7 @@ function renderNavLinks(loggedIn=true) {
     ];
   } else {
     links = [
+      {text: 'Home', url: '#/'},
       {text: 'Sign Up', url: '#/signup/'},
       {text: 'Log In', url: '#/login/'},
     ];
@@ -81,6 +82,7 @@ function renderNavLinks(loggedIn=true) {
     this.get('#/', function(context) {
       context.app.swap('');
       context.render('views/home.html').appendTo(context.$element());
+      context.render('views/signup.html').appendTo(context.$element());
       renderNavLinks(false);
     });
 
