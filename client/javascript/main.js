@@ -110,11 +110,9 @@ function setHeaderToken(token) {
     });
 
     this.post('#/signup/', function(context) {
-      const cell = this.params['user-cellphone'].replace('-', '').trim();
       const reqData = {
         email: this.params['user-email'],
         password: this.params['user-password'],
-        cellphone: parseInt(cell),
       };
       const reqSettings = {
           data: JSON.stringify(reqData),
