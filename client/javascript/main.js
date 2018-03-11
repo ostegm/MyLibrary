@@ -127,8 +127,19 @@ function setHeaderToken(token) {
         };
       $.ajax(`/api/library/${bookId}`, reqSettings)
         .done(function(resData) {
-          console.log('PUT req to /api/library:', resData);
           context.redirect('#/dashboard/');
+          })
+        .fail(function() {
+          flashMessage('Something went wrong, try again?');
+        });
+    })
+
+    this.get('#/delete/:bookId', function(context) {
+     const bookId = this.params['bookId']
+      $.ajax(`/api/library/${bookId}`, {type: 'DELETE'})
+        .done(function(resData) {
+          context.redirect('#/dashboard/');
+          flashMessage('Book Successfully removed from library.');
           })
         .fail(function() {
           flashMessage('Something went wrong, try again?');

@@ -67,8 +67,35 @@ button[type="submit"] {
   background: #15CD72;
   border: 0;
   cursor: pointer;
-  margin-bottom: 0;
-  
+  margin-bottom: 0; 
+}
+
+button[type="submit"]:hover,
+button[type="submit"]:focus {
+  background-color: #0CB863;
+  -webkit-transition: background 0.1s;
+  -moz-transition: background 0.1s;
+  -o-transition: background 0.1s;
+  transition: background 0.1s;
+}
+
+
+button.delete {
+  background: #cd8613; 
+}
+
+button.delete:hover,
+button.delete:focus {
+  background-color: #cd6f11;
+  -webkit-transition: background 0.1s;
+  -moz-transition: background 0.1s;
+  -o-transition: background 0.1s;
+  transition: background 0.1s;
+}
+
+button a {
+  text-decoration: none;
+  color: white;
 }
 
 
@@ -81,15 +108,6 @@ textarea, input, button[type="submit"]:focus {
  box-shadow: 0;
 }
 
-
-button[type="submit"]:hover,
-button[type="submit"]:focus {
-  background-color: #0CB863;
-  -webkit-transition: background 0.1s;
-  -moz-transition: background 0.1s;
-  -o-transition: background 0.1s;
-  transition: background 0.1s;
-}
 
 .signup-form p {
   font-size: 16px;
