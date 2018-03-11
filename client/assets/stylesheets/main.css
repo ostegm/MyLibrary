@@ -1,8 +1,8 @@
 body {
   background: #298eea;
   font-family: "Roboto", helvetica, sans-serif;
-  padding: 60px 0 0;
   margin: 0;
+  padding: 0;
   font-size: 18px;
 }
 
@@ -10,18 +10,43 @@ body * {
   box-sizing: border-box;
 }
 
-/* Potentially tricky: fieldset comes with default styles we must override. */
+/* Nav Bar */
+nav ul {
+  list-style: none;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+}
+
+nav li {
+  font-family: 'Oswald', sans-serif;
+  font-size: 1.2em;
+  line-height: 40px;
+  height: 40px;
+  border-bottom: 1px solid #888;
+}
+ 
+nav a {
+  text-decoration: none;
+  color: #fff;
+  display: block;
+  transition: .3s background-color;
+}
+ 
+nav a:hover {
+  background-color: #0CB863;
+}
+ 
+nav a.active {
+  background-color: #fff;
+  color: #444;
+  cursor: default;
+}
+
 fieldset {
   padding: 0;
   border: 0;
   margin: 0;
-}
-
-.logo {
-  display: block;
-  width: auto;
-  height: 35px;
-  margin: 0 auto 30px;
 }
 
 form {
@@ -164,7 +189,16 @@ textarea, input, button[type="submit"]:focus {
   color: black;
 }
 
+.container-wide {
+  max-width: 85%;
+  padding: 1em;
+  margin: 1em auto;
+}
 
+.button-container {
+  width: 200px;
+  margin-bottom: 30px;
+}
 
 /*//////////////////////////////////////////////////////////////////
 [ Table ]*/
@@ -262,3 +296,25 @@ th, td {
   background-color: #57b846;
   color: #fff;
 }
+
+@media screen and (min-width: 800px) {
+  nav li {
+    width: 100%;
+    border-bottom: none;
+    height: 50px;
+    line-height: 50px;
+    font-size: 1.4em;
+  }
+ 
+  nav li {
+    display: inline-block;
+    margin-right: -4px;
+  }
+
+  .container,
+  .container-wide, 
+  .books-table {
+    width: 100%l
+  }
+}
+

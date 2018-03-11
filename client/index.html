@@ -14,25 +14,24 @@
 <body>
   <div class="header-container">
     <header class="wrapper clearfix">
-      <nav>
+      <nav aria-live="assertive">
         <ul>
           <li><a href="#/login/">Log In</a></li>
           <li><a href="#/signup/">Sign Up</a></li>
           <li><a href="#/logout/">Log Out</a></li>
           <li><a href="#/dashboard/">Dashboard</a></li>
-          <li><a href="#/add-book/">Add a book</a></li>
         </ul>
         <div id="status-area"></div>
       </nav>
     </header>
   </div>
  
-  <div class="main-container">
-    <div class="main wrapper clearfix">
-      <div id="app">
-      <!-- template will be injected here -->
+  <main role="main" class="main-container container-wide">
+    <div class="wrapper clearfix">
+      <div id="app" aria-live="assertive">
+      <!-- templates will be injected here -->
       </div>
     </div>
-  </div>
+  </main>
 </body>
 </html>

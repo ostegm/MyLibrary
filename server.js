@@ -64,7 +64,7 @@ async function setupDemoAccount() {
   let existingBooks = await Library.count({userId: user._id})
   if (!existingBooks) {
     const seedData = [];
-    for (let i = 1; i <= 20; i++) {
+    for (let i = 1; i <= 8; i++) {
       seedData.push({
         userId: user._id,
         author: `${faker.name.firstName()} ${faker.name.lastName()}`,
