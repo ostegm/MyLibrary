@@ -18,7 +18,7 @@ LibrarySchema.methods.serialize = function() {
     userId: this.userId,
     title: this.title,
     author: this.author,
-    dateFinished: this.dateFinished,
+    dateFinished: this.dateFinished.toISOString().slice(0,10),
     comments: this.comments,
     id: this._id,
   };

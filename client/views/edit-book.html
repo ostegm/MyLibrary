@@ -1,0 +1,15 @@
+<form role="form" action="#/edit/{{id}}" accept-charset="UTF-8" method="post" class="add-book-form">
+  <fieldset>
+    <legend>What would you like to change?</legend>
+    <label for="book-name">Title</label>
+    <input type="text" value="{{title}}" name="title" id="title" required/>
+    <label for="author">Author</label>
+    <input value="{{author}}" type="text" name="author" id="author" required/>
+    <label for="date-finished">Date Finished</label>
+    <input value="{{dateFinished}}" type="date" name="date" id="date" required/>
+    <label for="comments">Comments</label>
+    <textarea name="comments" id="comments">{{comments}}</textarea>
+    <button type="submit">Edit Book</button>
+  </fieldset>
+<button class="delete" type="submit"><a href="#/delete/{{id}}">Remove Book</a></button> 
+</form>
