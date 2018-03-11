@@ -38,7 +38,7 @@ router.post('/', jsonParser, (req, res) => {
     });
   }
 
-  let {title, author, dateFinished} = req.body;
+  let {title, author, dateFinished, comments} = req.body;
   let userId = req.user.id;
   return Library.find({userId, title, author})
     .count()
@@ -50,7 +50,7 @@ router.post('/', jsonParser, (req, res) => {
           message: 'Book already present in library.',
         });
       }
-    return {title, author, dateFinished, userId};
+    return {title, author, dateFinished, userId, comments};
   }).then(newBook => {
     return Library.create(newBook);
   }).then( created => {
@@ -80,7 +80,7 @@ router.put('/:id', jsonParser, (req, res) => {
   }
 
   const updated = {};
-  const updateableFields = ['title', 'author', 'dateFinished'];
+  const updateableFields = ['title', 'author', 'dateFinished', 'comments'];
   updateableFields.forEach(field => {
     if (field in req.body) {
       updated[field] = req.body[field];
