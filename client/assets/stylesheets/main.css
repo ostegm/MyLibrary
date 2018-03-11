@@ -10,15 +10,14 @@ body * {
   box-sizing: border-box;
 }
 
-/* Nav Bar */
-nav ul {
+.nav ul {
   list-style: none;
+  background-color: #444;
   text-align: center;
   padding: 0;
   margin: 0;
 }
-
-nav li {
+.nav li {
   font-family: 'Oswald', sans-serif;
   font-size: 1.2em;
   line-height: 40px;
@@ -26,22 +25,25 @@ nav li {
   border-bottom: 1px solid #888;
 }
  
-nav a {
+.nav a {
   text-decoration: none;
   color: #fff;
   display: block;
   transition: .3s background-color;
 }
  
-nav a:hover {
+.nav a:hover {
   background-color: #0CB863;
 }
  
-nav a.active {
+.nav a.active {
   background-color: #fff;
   color: #444;
   cursor: default;
 }
+
+/* END Nav bar*/
+
 
 fieldset {
   padding: 0;
@@ -297,16 +299,17 @@ th, td {
   color: #fff;
 }
 
-@media screen and (min-width: 800px) {
-  nav li {
-    width: 100%;
+@media screen and (min-width: 600px) {
+  .nav li {
+    width: 120px;
     border-bottom: none;
     height: 50px;
     line-height: 50px;
     font-size: 1.4em;
   }
  
-  nav li {
+  /* Option 1 - Display Inline */
+  .nav li {
     display: inline-block;
     margin-right: -4px;
   }
