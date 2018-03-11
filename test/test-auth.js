@@ -14,7 +14,6 @@ chai.use(chaiHttp);
 describe('Auth endpoints', function() {
   const email = 'exampleUser@example.com';
   const password = 'examplePass1234';
-  const cellphone = 5555555555;
 
   before(function() {
     return runServer(TEST_DATABASE_URL);
@@ -26,7 +25,7 @@ describe('Auth endpoints', function() {
 
   beforeEach(function() {
     return User.hashPassword(password).then(hash =>
-      User.create({email, password:hash, cellphone})
+      User.create({email, password:hash})
     );
   });
 
@@ -99,7 +98,6 @@ describe('Auth endpoints', function() {
           const token = res.body.authToken;
           expect(token).to.be.a('string');
           const payload = jwt.verify(token, JWT_SECRET, {algorithm: ['HS256']});
-          expect(payload.user.email).to.equal(email);
         });
     });
   });
@@ -126,9 +124,7 @@ describe('Auth endpoints', function() {
       const exampleUser = User.findOne({});
       const token = jwt.sign(
         {
-          email: exampleUser.email,
           id: exampleUser.id,
-          cellphone: exampleUser.cellphone
         },
         'wrongSecret',
         {
@@ -157,9 +153,7 @@ describe('Auth endpoints', function() {
       const exampleUser = User.findOne({});
       const token = jwt.sign(
         {
-          email: exampleUser.email,
           id: exampleUser.id,
-          cellphone: exampleUser.cellphone
         },
         'wrongSecret',
         {
@@ -184,30 +178,21 @@ describe('Auth endpoints', function() {
         });
     });
 
-    // it('Should return a valid auth token with a newer expiry date', function() {
-    //   return chai
-    //     .request(app)
-    //     .post('/api/auth/login')
-    //     .send({email, password})
-    //     .then(res => {
-    //       const token = res.body.authToken;
-    //     }).then(token => {
-    //       return chai
-    //         .request(app)
-    //         .post('/api/auth/refresh')
-    //         .set('authorization', `Bearer ${token}`)
-    //         .then(res => {
-    //           expect(res).to.have.status(200);
-    //           expect(res.body).to.be.an('object');
-    //           const token = res.body.authToken;
-    //           expect(token).to.be.a('string');
-    //           const payload = jwt.verify(token, JWT_SECRET, {
-    //             algorithm: ['HS256']
-    //           });
-    //           expect(payload.user.email).to.equal(email);
-    //         });
-    //     });
-      // });
+    it('Should return a valid auth token with a newer expiry date', async function() {
+      let res = await chai.request(app)
+        .post('/api/auth/login')
+        .send({email, password})
+      let token = res.body.authToken;
+      res = await chai.request(app)
+        .post('/api/auth/refresh')
+        .set('authorization', `Bearer ${token}`)
+      expect(res).to.have.status(200);
+      expect(res.body).to.be.an('object');
+      token = res.body.authToken;
+      expect(token).to.be.a('string');
+      const payload = jwt.verify(token, JWT_SECRET, {algorithm: ['HS256']});
+    });
+
   });
 });
 

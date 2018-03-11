@@ -13,7 +13,6 @@ chai.use(chaiHttp);
 describe('/api/user', function() {
   const email = 'exampleUser@example.com';
   const password = 'examplePass';
-  const cellphone = 1111111111;
 
   before(function() {
     return runServer(TEST_DATABASE_URL);
@@ -35,7 +34,7 @@ describe('/api/user', function() {
         return chai
           .request(app)
           .post('/api/users')
-          .send({password,cellphone})
+          .send({password})
           .then(() =>
             expect.fail(null, null, 'Request should not succeed')
           )
@@ -56,7 +55,7 @@ describe('/api/user', function() {
         return chai
           .request(app)
           .post('/api/users')
-          .send({password,cellphone})
+          .send({password})
           .then(() =>
             expect.fail(null, null, 'Request should not succeed')
           )
@@ -77,7 +76,7 @@ describe('/api/user', function() {
         return chai
           .request(app)
           .post('/api/users')
-          .send({email, cellphone})
+          .send({email})
           .then(() =>
             expect.fail(null, null, 'Request should not succeed')
           )
@@ -94,32 +93,11 @@ describe('/api/user', function() {
           });
       });
 
-      it('Should reject users with missing cellphone', function() {
-        return chai
-          .request(app)
-          .post('/api/users')
-          .send({email, password})
-          .then(() =>
-            expect.fail(null, null, 'Request should not succeed')
-          )
-          .catch(err => {
-            if (err instanceof chai.AssertionError) {
-              throw err;
-            }
-
-            const res = err.response;
-            expect(res).to.have.status(422);
-            expect(res.body.reason).to.equal('ValidationError');
-            expect(res.body.message).to.equal('Missing field');
-            expect(res.body.location).to.equal('cellphone');
-          });
-      });
-
       it('Should reject users with non-string email', function() {
         return chai
           .request(app)
           .post('/api/users')
-          .send({email: 1234, password, cellphone})
+          .send({email: 1234, password})
           .then(() =>
             expect.fail(null, null, 'Request should not succeed')
           )
@@ -142,7 +120,7 @@ describe('/api/user', function() {
         return chai
           .request(app)
           .post('/api/users')
-          .send({email, password: 1234, cellphone})
+          .send({email, password: 1234})
           .then(() =>
             expect.fail(null, null, 'Request should not succeed')
           )
@@ -165,7 +143,7 @@ describe('/api/user', function() {
         return chai
           .request(app)
           .post('/api/users')
-          .send({email, password: '123456789', cellphone})
+          .send({email, password: '123456789'})
           .then(() =>
             expect.fail(null, null, 'Request should not succeed')
           )
@@ -188,7 +166,7 @@ describe('/api/user', function() {
         return chai
           .request(app)
           .post('/api/users')
-          .send({email, password: new Array(73).fill('a').join(''), cellphone})
+          .send({email, password: new Array(73).fill('a').join('')})
           .then(() =>
             expect.fail(null, null, 'Request should not succeed')
           )
@@ -207,13 +185,13 @@ describe('/api/user', function() {
           });
       });
 
-      it('Should reject users with duplicate username', function () {
+      it('Should reject users with duplicate email', function () {
         // Create an initial user
-        return User.create({email, password, cellphone})
+        return User.create({email, password})
           .then(() =>
             // Try to create a second user with the same username
             chai.request(app).post('/api/users').send(
-              {email, password, cellphone})
+              {email, password})
           )
           .then(() =>
             expect.fail(null, null, 'Request should not succeed')
@@ -233,29 +211,18 @@ describe('/api/user', function() {
           });
       });
 
-      it('Should create a new user', function () {
-        return chai
-          .request(app)
+      it('Should create a new user', async function () {
+        let res = await chai.request(app)
           .post('/api/users')
-          .send({email, password, cellphone})
-          .then(res => {
-            expect(res).to.have.status(201);
-            expect(res.body).to.be.an('object');
-            expect(res.body).to.have.keys('email', 'cellphone', 'id');
-            expect(res.body.email).to.equal(email);
-            expect(res.body.cellphone).to.equal(cellphone);
-            return User.findOne({
-              email
-            });
-          })
-          .then(user => {
-            expect(user).to.not.be.null;
-            expect(user.cellphone).to.equal(cellphone);
-            return user.validatePassword(password);
-          })
-          .then(passwordIsCorrect => {
-            expect(passwordIsCorrect).to.be.true;
-          });
+          .send({email, password})
+        expect(res).to.have.status(201);
+        expect(res.body).to.be.an('object');
+        expect(res.body).to.have.keys('id');
+        let user = await User.findOne({email});
+        expect(user).to.not.be.null;
+        expect(user.id).to.equal(res.body.id);
+        let passwordIsCorrect = await user.validatePassword(password);
+        expect(passwordIsCorrect).to.be.true;
       });
 
     });
