@@ -79,6 +79,16 @@ function setHeaderToken(token) {
       } else {
         context.app.swap('');
         context.render('views/dashboard.html').appendTo(context.$element());
+        $.get('/api/library')
+          .done(function(books) {
+            $.each(books, function(i, book) {
+              context.render('views/book.html', book)
+                .appendTo(context.$element());
+            });
+          })
+          .fail( function() {
+            flashMessage('Make sure you have at least one book in your library.');
+          })
       }     
     });
 
