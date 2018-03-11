@@ -20,7 +20,6 @@ const TESTUSER = {
 let TOKEN = null; // to be filled in by createTestUser
 
 function getValidToken() {
-  console.log('Getting token.');
   return chai
         .request(app)
         .post('/api/auth/login')
@@ -31,7 +30,6 @@ function getValidToken() {
 }
 
 function createTestUser() {
-  console.info('Creating Test User');
   return User.hashPassword(TESTUSER.password)
     .then(hash => {
       const newUser = Object.assign({}, TESTUSER);
@@ -81,63 +79,57 @@ function removeTestUser() {
 describe('Library api tests', function() {
   
   before(function() {
-    return runServer(TEST_DATABASE_URL);
+    return runServer(TEST_DATABASE_URL).then(() => createTestUser());
   });
 
   after( function() {
-    return closeServer();
+    return removeTestUser().then(() => closeServer());
   });
 
   beforeEach(function () {
-    return createTestUser(); //seedLibraryData(TESTUSER.userId);
+    return seedLibraryData(TESTUSER.userId);
   });
 
   afterEach(function () {
-    return removeTestUser(); //clearLibrary();
+    return clearLibrary();
   });
 
-
-  it('should run a test.', function() {
-    console.log('I ran.');
+  it('Should reject requests without a valid token', function() {
+    return chai.request(app)
+      .get('/api/library')
+      .then(() =>
+        expect.fail(null, null, 'Request should not succeed')
+      )
+      .catch(err => {
+        if (err instanceof chai.AssertionError) {
+          throw err;
+        }
+        const res = err.response;
+        expect(res).to.have.status(401);
+      });
   });
 
-  it('should run another test.', function() {
-    console.log('I ran again.');
+ it('Should list content on GET', function() {
+    let res;
+    return chai.request(app)
+      .get('/api/library')
+      .set('Authorization', `Bearer ${TOKEN}`)
+      .then(function(_res) {
+        res = _res; //for future then blocks.
+        expect(res).to.have.status(200);
+        expect(res).to.be.json;
+        expect(res.body).to.be.a('array');
+        expect(res.body.length).to.be.at.least(1);
+        const expectedKeys = ['id', 'title', 'author', 'dateFinished'];
+        res.body.forEach(function(item) {
+          expect(item).to.be.a('object');
+          expect(item).to.include.keys(expectedKeys);
+        })
+      return Library.count();
+      }).then(function(count) {
+        expect(res.body.length === count).to.be.true;
+      });
   });
-
-  it('Should return a valid auth token', function() {
-      return chai
-        .request(app)
-        .post('/api/auth/login')
-        .send({email: TESTUSER.email, password:TESTUSER.password})
-        .then(res => {
-          expect(res).to.have.status(200);
-          expect(res.body).to.be.an('object');
-          const token = res.body.authToken;
-          expect(token).to.be.a('string');
-        });
-    });
-
- // it('Should list content on GET', function() {
- //    let res;
- //    return chai.request(app)
- //      .get('/blog-posts')
- //      .then(function(_res) {
- //        res = _res; //for future then blocs.
- //        expect(res).to.have.status(200);
- //        expect(res).to.be.json;
- //        expect(res.body).to.be.a('array');
- //        expect(res.body.length).to.be.at.least(1);
- //        const expectedKeys = ['id', 'title', 'content', 'author'];
- //        res.body.forEach(function(item) {
- //          expect(item).to.be.a('object');
- //          expect(item).to.include.keys(expectedKeys);
- //        })
- //      return BlogPosts.count();
- //      }).then(function(count) {
- //          expect(res.body.length === count).to.be.true;
- //      });
- //  });
 
   // it('Should find by ID on GET', function() {
   //   let res, id;
