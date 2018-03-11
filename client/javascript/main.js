@@ -45,6 +45,26 @@ function setHeaderToken(token) {
   });
 }
 
+function renderNavLinks(loggedIn=true) {
+  let links;
+  if (loggedIn) {
+    links = [
+      {text: 'Dashboard', url: '#/dashboard/'},
+      {text: 'Sign Out', url: '#/logout/'},
+    ];
+  } else {
+    links = [
+      {text: 'Sign Up', url: '#/signup/'},
+      {text: 'Log In', url: '#/login/'},
+    ];
+  }
+  $('.nav-links').empty()
+  const navLinkHtml =  links.map(item => {
+    return `<li><a href="${item.url}">${item.text}</a></li>`
+  })
+  $('.nav-links').append(navLinkHtml);
+}
+
 (function($) {
   // Define our app.
   var app = $.sammy('#app', function() {
@@ -61,16 +81,19 @@ function setHeaderToken(token) {
     this.get('#/', function(context) {
       context.app.swap('');
       context.render('views/home.html').appendTo(context.$element());
+      renderNavLinks(false);
     });
 
     this.get('#/login/', function(context) {
       context.app.swap('');
       context.render('views/login.html').appendTo(context.$element());
+      renderNavLinks(false);
     });
 
     this.get('#/login-required/', function(context) {
       context.app.swap('');
       context.render('views/login.html').appendTo(context.$element());
+      renderNavLinks(false);
       flashMessage('You must be logged in to view that page.', 5000);
     });
 
@@ -81,6 +104,7 @@ function setHeaderToken(token) {
       }
       context.app.swap('');
       context.render('views/dashboard.html').appendTo(context.$element());
+      renderNavLinks(true);      
       let rendered;
       BOOKS = []
       $.get('/api/library')
@@ -95,6 +119,43 @@ function setHeaderToken(token) {
         .fail( function() {
           flashMessage('Make sure you have at least one book in your library.');
         })
+    });
+
+   this.get('#/add-book/', function(context) {
+      if (!TOKEN) {
+        context.redirect('#/login-required/');
+        return
+      }     
+      context.app.swap('');
+      context.render('views/add-book.html').appendTo(context.$element());
+      renderNavLinks(true);      
+   });
+
+    this.post('#/add-book/', function(context) {
+      if (!USERID) {
+        USERID = parseJwt(TOKEN);
+      }
+      const reqData = {
+        author: this.params['author'],
+        title: this.params['title'],
+        comments: this.params['comments'],
+        dateFinished: this.params['date'],
+        userId: USERID,
+      };
+      const reqSettings = {
+          data: JSON.stringify(reqData),
+          contentType: 'application/json',
+          type: 'POST',
+        };
+      $.ajax('/api/library', reqSettings)
+        .done(function(resData) {
+          context.redirect('#/dashboard/');
+          })
+        .fail(function(msg) {
+          console.log(msg);
+          const error = msg.responseJSON.message;
+          flashMessage(`Something went wrong: ${error}`, 20000);
+        });
     });
 
     this.get('#/edit/:bookId', async function(context) {
@@ -171,6 +232,7 @@ function setHeaderToken(token) {
     this.get('#/signup/', function(context) {
       context.app.swap('');
       context.render('views/signup.html').appendTo(context.$element());
+      renderNavLinks(false);      
     });
 
     this.post('#/signup/', function(context) {
@@ -206,42 +268,9 @@ function setHeaderToken(token) {
       TOKEN = null;
       localStorage.removeItem('TOKEN');
       setHeaderToken(null);
-      context.app.swap('');
-      context.render('views/login.html').appendTo(context.$element());
+      context.redirect('#/login/');
     });
 
-    this.get('#/add-book/', function(context) {
-      if (!TOKEN) {
-        context.redirect('#/login-required/');
-        return
-      }     
-      context.app.swap('');
-      context.render('views/add-book.html').appendTo(context.$element());
-    });
-
-    this.post('#/add-book/', function(context) {
-      const reqData = {
-        author: this.params['author'],
-        title: this.params['title'],
-        comments: this.params['comments'],
-        dateFinished: this.params['date'],
-        userId: USERID,
-      };
-      const reqSettings = {
-          data: JSON.stringify(reqData),
-          contentType: 'application/json',
-          type: 'POST',
-        };
-      $.ajax('/api/library', reqSettings)
-        .done(function(resData) {
-          context.redirect('#/dashboard/');
-          })
-        .fail(function(msg) {
-          console.log(msg);
-          const error = msg.responseJSON.message;
-          flashMessage(`Something went wrong: ${error}`, 20000);
-        });
-    });
   
   });
 
