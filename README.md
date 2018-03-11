@@ -1,2 +1,2 @@
-# BusAlarm
-A simple webapp for alerting someone when their next bus is going to arrive.
+# MyLibrary
+A simple webapp for storing a private library of books you've read.
