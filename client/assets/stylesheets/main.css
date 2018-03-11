@@ -14,6 +14,10 @@ body * {
   box-sizing: border-box;
 }
 
+header {
+  margin-bottom: 50px;
+}
+
 .nav ul {
   list-style: none;
   background-color: #444;
@@ -179,21 +183,24 @@ textarea, input, button[type="submit"]:focus {
 
 
 #flash-message {
-  width:400px;
+  /*width:400px;*/
   min-height: 30px;
   background: #CCCCCC;
   color:#060;
-  line-height:30px;
   border:1px solid #808080;
-  font-family:arial, helvetica, sans-serif;
-  font-size:12pt;
+  border-radius: 4%;
   margin-top:30px;
 }
 
 #flash-message span {
+  width: 100%;
+  line-height: 38px;
+  font-size: 18px;
+  color: #565656;
   text-align: center;
-  margin-top: 20px;
-  color: black;
+  letter-spacing: 0;
+  margin: 0 auto 45px;
+  padding: 0 5px 0;
 }
 
 .container-wide {

@@ -11,13 +11,12 @@ function parseJwt (token) {
 
 function flashMessage(message, timemout=1000) {
   const template = '<div id="flash-message"><span>{{message}}</span></div>';
-  const noticeHtml = Mustache.to_html(template, {message});
-  const notice = $(noticeHtml);
+  const notice = $(Mustache.to_html(template, {message}));
   notice.css('position', 'absolute');
   notice.css('z-index', 1050);
-  $('body').append(notice.hide());
+  $('#app').prepend(notice.hide());
   notice.css('left', ($('body').width() / 2) - (notice.width() / 2)) + 'px';
-  notice.css('top', $(window).scrollTop() + 'px');
+  notice.css('top', $(window).scrollTop() + 30 + 'px');
   notice.fadeIn();
   function removeNotice() { 
     notice.fadeOut(function() {
