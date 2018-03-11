@@ -52,6 +52,7 @@ function seedLibraryData(userId) {
       author: `${faker.name.firstName()} ${faker.name.lastName()}`,
       title: faker.lorem.sentence(),
       dateFinished: faker.date.past(10),
+      comments: faker.lorem.text(),
     });
   }
   // this will return a promise
@@ -130,6 +131,7 @@ describe('Library api tests', function() {
     const newItem = {
       title: 'test',
       author: 'test',
+      comments: 'test',
       dateFinished: '2018-01-01',
       userId: TESTUSER.userId,
     };
@@ -147,6 +149,7 @@ describe('Library api tests', function() {
     const updateData = {
       title: 'test',
       author: 'test',
+      comments: 'test',
     };
     let res = await chai.request(app)
       .get('/api/library')
@@ -160,6 +163,7 @@ describe('Library api tests', function() {
     let foundItem = await Library.findById(updateData.id);
     expect(foundItem.title).to.equal(updateData.title);
     expect(foundItem.author).to.equal(updateData.author);
+    expect(foundItem.comments).to.equal(updateData.comments);
   });
 
   it('should delete items on DELETE', async function() {

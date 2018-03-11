@@ -9,7 +9,8 @@ const LibrarySchema = mongoose.Schema({
   userId: {type: String, required: true},
   title: {type: String, required: true},
   author: {type: String, required: true},
-  dateFinished: {type: Date, required: true}
+  dateFinished: {type: Date, required: true},
+  comments: {type: String}
 });
 
 LibrarySchema.methods.serialize = function() {
@@ -18,6 +19,7 @@ LibrarySchema.methods.serialize = function() {
     title: this.title,
     author: this.author,
     dateFinished: this.dateFinished,
+    comments: this.comments,
     id: this._id,
   };
 };
