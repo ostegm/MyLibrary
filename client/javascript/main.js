@@ -49,9 +49,10 @@ function setHeaderToken(token) {
   // Define our app.
   var app = $.sammy('#app', function() {
     let TOKEN = localStorage.getItem('TOKEN') || null;
-    let USERID = parseJwt(TOKEN) || null;
+    let USERID;
     if (TOKEN) {
       console.log('Loaded token from local storage.');
+      USERID = parseJwt(TOKEN) || null;
       setHeaderToken(TOKEN);
     }
     this.use('Mustache', 'html');
@@ -69,7 +70,7 @@ function setHeaderToken(token) {
     this.get('#/login-required/', function(context) {
       context.app.swap('');
       context.render('views/login.html').appendTo(context.$element());
-      flashMessage('You must be logged in to view the dashboard.', 5000);
+      flashMessage('You must be logged in to view that page.', 5000);
     });
 
     this.get('#/dashboard/', function(context) {
@@ -148,14 +149,19 @@ function setHeaderToken(token) {
     });
 
     this.get('#/add-book/', function(context) {
-      context.app.swap('');
-      context.render('views/add-book.html').appendTo(context.$element());
+      if (!TOKEN) {
+        context.redirect('#/login-required/');
+      } else {
+        context.app.swap('');
+        context.render('views/add-book.html').appendTo(context.$element());
+      }     
     });
 
     this.post('#/add-book/', function(context) {
       const reqData = {
         author: this.params['author'],
         title: this.params['title'],
+        comments: this.params['comments'],
         dateFinished: this.params['date'],
         userId: USERID,
       };
