@@ -7,6 +7,7 @@ const passport = require('passport');
 mongoose.Promise = global.Promise;
 
 const {PORT, DATABASE_URL} = require('./config');
+const {router: libraryRouter} = require('./library');
 const {router: usersRouter} = require('./users');
 const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
 passport.use(localStrategy);
@@ -34,11 +35,13 @@ app.get('/', (req, res) => {
 // Routers
 app.use('/api/users/', usersRouter);
 app.use('/api/auth/', authRouter);
+app.use('/api/library/', libraryRouter);
+
 
 // Protected endpoint for testing.
 app.get('/api/protected', jwtAuth, (req, res) => {
   return res.json({
-    data: 'rosebud'
+    data: 'this is a supersecret endpoint.'
   });
 });
 
