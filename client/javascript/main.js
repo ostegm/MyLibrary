@@ -2,6 +2,12 @@
 const NEXTBUSURL = 'http://webservices.nextbus.com/service/publicXMLFeed?';
 const x2js = new X2JS();
 
+function parseJwt (token) {
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace('-', '+').replace('_', '/');
+  return JSON.parse(window.atob(base64));
+};
+
 
 function flashMessage(message, timemout=1000) {
   const template = '<div id="flash-message"><span>{{message}}</span></div>';
@@ -43,6 +49,7 @@ function setHeaderToken(token) {
   // Define our app.
   var app = $.sammy('#app', function() {
     let TOKEN = localStorage.getItem('TOKEN') || null;
+    let USERID = parseJwt(TOKEN) || null;
     if (TOKEN) {
       console.log('Loaded token from local storage.');
       setHeaderToken(TOKEN);
@@ -119,6 +126,7 @@ function setHeaderToken(token) {
           $.ajax('/api/auth/login', reqSettings)
             .done(function(resData) {
               TOKEN = resData.authToken;
+              USERID = parseJwt(TOKEN);
               localStorage.setItem('TOKEN', TOKEN);
               setHeaderToken(TOKEN);
               context.redirect('#/dashboard/');
@@ -145,10 +153,28 @@ function setHeaderToken(token) {
     });
 
     this.post('#/add-book/', function(context) {
-      console.log(this.params)
+      const reqData = {
+        author: this.params['author'],
+        title: this.params['title'],
+        dateFinished: this.params['date'],
+        userId: USERID,
+      };
+      const reqSettings = {
+          data: JSON.stringify(reqData),
+          contentType: 'application/json',
+          type: 'POST',
+        };
+      $.ajax('/api/library', reqSettings)
+        .done(function(resData) {
+          context.redirect('#/dashboard/');
+          })
+        .fail(function(msg) {
+          console.log(msg);
+          const error = msg.responseJSON.message;
+          flashMessage(`Something went wrong: ${error}`, 20000);
+        });
     });
-
-
+  
   });
 
   $(function() {
