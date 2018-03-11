@@ -50,6 +50,7 @@ function setHeaderToken(token) {
   var app = $.sammy('#app', function() {
     let TOKEN = localStorage.getItem('TOKEN') || null;
     let USERID;
+    let BOOKS = []; //Refilled each time dashboard loads.
     if (TOKEN) {
       console.log('Loaded token from local storage.');
       USERID = parseJwt(TOKEN) || null;
@@ -76,22 +77,63 @@ function setHeaderToken(token) {
     this.get('#/dashboard/', function(context) {
       if (!TOKEN) {
         context.redirect('#/login-required/');
-      } else {
-        context.app.swap('');
-        context.render('views/dashboard.html').appendTo(context.$element());
-        let rendered;
-        $.get('/api/library')
-          .done(function(books) {
-            $.each(books, async function(i, book) {
-              rendered = await context.render('views/book.html', book)
-              $('tbody').append(rendered);
-            });
-          })
-          .fail( function() {
-            flashMessage('Make sure you have at least one book in your library.');
-          })
-      }     
+        return
+      }
+      context.app.swap('');
+      context.render('views/dashboard.html').appendTo(context.$element());
+      let rendered;
+      BOOKS = []
+      $.get('/api/library')
+        .done(function(books) {
+          $.each(books, async function(i, book) {
+            BOOKS.push(book);
+            book.editUrl = `#/edit/${book.id}`
+            rendered = await context.render('views/book.html', book)
+            $('tbody').append(rendered);
+          });
+        })
+        .fail( function() {
+          flashMessage('Make sure you have at least one book in your library.');
+        })
     });
+
+    this.get('#/edit/:bookId', async function(context) {
+      if (!TOKEN) {
+        context.redirect('#/login-required/');
+        return
+      }
+      let bookId = this.params['bookId']
+      BOOKS = await $.get('/api/library')
+      let book = BOOKS.find(b => {return b.id === bookId})
+      console.log(bookId, book)
+      context.app.swap('');
+      context.render('views/edit-book.html', book)
+        .appendTo(context.$element());
+    });
+
+    this.post('#/edit/:bookId', function(context) {
+     const bookId = this.params['bookId']
+     const reqData = {
+        id: bookId,
+        title: this.params['title'],
+        author: this.params['author'],
+        dateFinished: this.params['dateFinished'],
+        comments: this.params['comments'],
+      };
+      const reqSettings = {
+          data: JSON.stringify(reqData),
+          contentType: 'application/json',
+          type: 'PUT',
+        };
+      $.ajax(`/api/library/${bookId}`, reqSettings)
+        .done(function(resData) {
+          console.log('PUT req to /api/library:', resData);
+          context.redirect('#/dashboard/');
+          })
+        .fail(function() {
+          flashMessage('Something went wrong, try again?');
+        });
+    })
 
     this.post('#/login/', function(context) {
       const reqData = {
@@ -160,10 +202,10 @@ function setHeaderToken(token) {
     this.get('#/add-book/', function(context) {
       if (!TOKEN) {
         context.redirect('#/login-required/');
-      } else {
-        context.app.swap('');
-        context.render('views/add-book.html').appendTo(context.$element());
+        return
       }     
+      context.app.swap('');
+      context.render('views/add-book.html').appendTo(context.$element());
     });
 
     this.post('#/add-book/', function(context) {
