@@ -4,12 +4,13 @@ const express = require('express');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const passport = require('passport');
+const faker = require('faker');
 mongoose.Promise = global.Promise;
 
 const {PORT, DATABASE_URL} = require('./config');
-const {router: libraryRouter} = require('./library');
-const {router: usersRouter} = require('./users');
-const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
+const {router: libraryRouter, Library} = require('./library');
+const {router: usersRouter, User} = require('./users');
+const {router: authRouter, localStrategy, jwtStrategy} = require('./auth');
 passport.use(localStrategy);
 passport.use(jwtStrategy);
 const jwtAuth = passport.authenticate('jwt', { session: false });
@@ -50,12 +51,49 @@ app.use('*', (req, res) => {
   return res.status(404).json({status: 404, message: 'Not Found'});
 });
 
+
+//Setup an example account for demos.
+const demoEmail = 'demo@test.com'
+const demoPass = '1234567890'
+async function setupDemoAccount() {
+  let user = await User.findOne({email: demoEmail})
+  if (!user) {
+    let hash = await User.hashPassword(demoPass)
+    user = await User.create({email: demoEmail, password: hash})
+  };
+  let existingBooks = await Library.count({userId: user._id})
+  if (!existingBooks) {
+    const seedData = [];
+    for (let i = 1; i <= 20; i++) {
+      seedData.push({
+        userId: user._id,
+        author: `${faker.name.firstName()} ${faker.name.lastName()}`,
+        title: faker.lorem.sentence(),
+        dateFinished: faker.date.past(10),
+        comments: faker.lorem.text(),
+      });
+    }
+    // this will return a promise
+    let seeded = await Library.insertMany(seedData);
+    console.log('Seeded demo account.')
+  } else {
+    console.log('Demo account already seeded.')
+  }
+}
+
+async function clearDemoAccount() {
+  let userId = await User.findOne({email: demoEmail})._id
+  let removed = await Library.remove({userId});
+  console.log('Removed demo account entries: ', removed)
+}
+
+
 // Referenced by both runServer and closeServer. closeServer
 // assumes runServer has run and set `server` to a server object
 let server;
 
 function runServer(databaseUrl, port = PORT) {
-
+  setupDemoAccount()
   return new Promise((resolve, reject) => {
     mongoose.connect(databaseUrl, err => {
       if (err) {
