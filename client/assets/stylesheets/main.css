@@ -1,27 +1,63 @@
 body {
   background: #298eea;
   font-family: "Roboto", helvetica, sans-serif;
-  padding: 60px 0 0;
   margin: 0;
+  padding: 0;
   font-size: 18px;
+}
+
+h1 {
+  color: #ffff;
 }
 
 body * {
   box-sizing: border-box;
 }
 
-/* Potentially tricky: fieldset comes with default styles we must override. */
+header {
+  margin-bottom: 50px;
+}
+
+.nav ul {
+  list-style: none;
+  background-color: #444;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+}
+.nav li {
+  font-family: 'Oswald', sans-serif;
+  line-height: 40px;
+  height: 40px;
+  border-bottom: 1px solid #888;
+}
+ 
+.nav a {
+  text-transform: uppercase;
+  font-size: 16px;
+  text-decoration: none;
+  color: #fff;
+  display: block;
+  transition: .3s background-color;
+}
+ 
+.nav a:hover {
+  background-color: #0CB863;
+}
+ 
+.nav a.active {
+  background-color: #fff;
+  color: #444;
+  cursor: default;
+}
+
+/* END Nav bar*/
+
+
 fieldset {
   padding: 0;
   border: 0;
   margin: 0;
-}
-
-.logo {
-  display: block;
-  width: auto;
-  height: 35px;
-  margin: 0 auto 30px;
 }
 
 form {
@@ -147,24 +183,36 @@ textarea, input, button[type="submit"]:focus {
 
 
 #flash-message {
-  width:400px;
+  /*width:400px;*/
   min-height: 30px;
   background: #CCCCCC;
   color:#060;
-  line-height:30px;
   border:1px solid #808080;
-  font-family:arial, helvetica, sans-serif;
-  font-size:12pt;
+  border-radius: 4%;
   margin-top:30px;
 }
 
 #flash-message span {
+  width: 100%;
+  line-height: 38px;
+  font-size: 18px;
+  color: #565656;
   text-align: center;
-  margin-top: 20px;
-  color: black;
+  letter-spacing: 0;
+  margin: 0 auto 45px;
+  padding: 0 5px 0;
 }
 
+.container-wide {
+  max-width: 85%;
+  padding: 1em;
+  margin: 1em auto;
+}
 
+.button-container {
+  width: 200px;
+  margin-bottom: 30px;
+}
 
 /*//////////////////////////////////////////////////////////////////
 [ Table ]*/
@@ -240,8 +288,7 @@ th, td {
   color: #fff;
   line-height: 1.4;
   text-transform: uppercase;
-
-  background-color: #333333;
+  background-color: #444;
 }
 
 .table100.ver1 .row100:hover td {
@@ -262,3 +309,26 @@ th, td {
   background-color: #57b846;
   color: #fff;
 }
+
+@media screen and (min-width: 600px) {
+  .nav li {
+    width: 120px;
+    border-bottom: none;
+    height: 50px;
+    line-height: 50px;
+    font-size: 1.4em;
+  }
+ 
+  /* Option 1 - Display Inline */
+  .nav li {
+    display: inline-block;
+    margin-right: -4px;
+  }
+
+  .container,
+  .container-wide, 
+  .books-table {
+    width: 100%l
+  }
+}
+

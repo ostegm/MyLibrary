@@ -11,13 +11,12 @@ function parseJwt (token) {
 
 function flashMessage(message, timemout=1000) {
   const template = '<div id="flash-message"><span>{{message}}</span></div>';
-  const noticeHtml = Mustache.to_html(template, {message});
-  const notice = $(noticeHtml);
+  const notice = $(Mustache.to_html(template, {message}));
   notice.css('position', 'absolute');
   notice.css('z-index', 1050);
-  $('body').append(notice.hide());
+  $('#app').prepend(notice.hide());
   notice.css('left', ($('body').width() / 2) - (notice.width() / 2)) + 'px';
-  notice.css('top', $(window).scrollTop() + 'px');
+  notice.css('top', $(window).scrollTop() + 30 + 'px');
   notice.fadeIn();
   function removeNotice() { 
     notice.fadeOut(function() {
@@ -45,6 +44,28 @@ function setHeaderToken(token) {
   });
 }
 
+function renderNavLinks(loggedIn=true) {
+  let links;
+  if (loggedIn) {
+    links = [
+      {text: 'My Library', url: '#/dashboard/'},
+      {text: 'Add a Book', url: '#/add-book/'},
+      {text: 'Sign Out', url: '#/logout/'},
+    ];
+  } else {
+    links = [
+      {text: 'Home', url: '#/'},
+      {text: 'Sign Up', url: '#/signup/'},
+      {text: 'Log In', url: '#/login/'},
+    ];
+  }
+  $('.nav-links').empty()
+  const navLinkHtml =  links.map(item => {
+    return `<li><a href="${item.url}">${item.text}</a></li>`
+  })
+  $('.nav-links').append(navLinkHtml);
+}
+
 (function($) {
   // Define our app.
   var app = $.sammy('#app', function() {
@@ -61,16 +82,20 @@ function setHeaderToken(token) {
     this.get('#/', function(context) {
       context.app.swap('');
       context.render('views/home.html').appendTo(context.$element());
+      context.render('views/signup.html').appendTo(context.$element());
+      renderNavLinks(false);
     });
 
     this.get('#/login/', function(context) {
       context.app.swap('');
       context.render('views/login.html').appendTo(context.$element());
+      renderNavLinks(false);
     });
 
     this.get('#/login-required/', function(context) {
       context.app.swap('');
       context.render('views/login.html').appendTo(context.$element());
+      renderNavLinks(false);
       flashMessage('You must be logged in to view that page.', 5000);
     });
 
@@ -81,6 +106,7 @@ function setHeaderToken(token) {
       }
       context.app.swap('');
       context.render('views/dashboard.html').appendTo(context.$element());
+      renderNavLinks(true);      
       let rendered;
       BOOKS = []
       $.get('/api/library')
@@ -95,6 +121,43 @@ function setHeaderToken(token) {
         .fail( function() {
           flashMessage('Make sure you have at least one book in your library.');
         })
+    });
+
+   this.get('#/add-book/', function(context) {
+      if (!TOKEN) {
+        context.redirect('#/login-required/');
+        return
+      }     
+      context.app.swap('');
+      context.render('views/add-book.html').appendTo(context.$element());
+      renderNavLinks(true);      
+   });
+
+    this.post('#/add-book/', function(context) {
+      if (!USERID) {
+        USERID = parseJwt(TOKEN);
+      }
+      const reqData = {
+        author: this.params['author'],
+        title: this.params['title'],
+        comments: this.params['comments'],
+        dateFinished: this.params['date'],
+        userId: USERID,
+      };
+      const reqSettings = {
+          data: JSON.stringify(reqData),
+          contentType: 'application/json',
+          type: 'POST',
+        };
+      $.ajax('/api/library', reqSettings)
+        .done(function(resData) {
+          context.redirect('#/dashboard/');
+          })
+        .fail(function(msg) {
+          console.log(msg);
+          const error = msg.responseJSON.message;
+          flashMessage(`Something went wrong: ${error}`, 20000);
+        });
     });
 
     this.get('#/edit/:bookId', async function(context) {
@@ -171,6 +234,7 @@ function setHeaderToken(token) {
     this.get('#/signup/', function(context) {
       context.app.swap('');
       context.render('views/signup.html').appendTo(context.$element());
+      renderNavLinks(false);      
     });
 
     this.post('#/signup/', function(context) {
@@ -206,42 +270,9 @@ function setHeaderToken(token) {
       TOKEN = null;
       localStorage.removeItem('TOKEN');
       setHeaderToken(null);
-      context.app.swap('');
-      context.render('views/login.html').appendTo(context.$element());
+      context.redirect('#/login/');
     });
 
-    this.get('#/add-book/', function(context) {
-      if (!TOKEN) {
-        context.redirect('#/login-required/');
-        return
-      }     
-      context.app.swap('');
-      context.render('views/add-book.html').appendTo(context.$element());
-    });
-
-    this.post('#/add-book/', function(context) {
-      const reqData = {
-        author: this.params['author'],
-        title: this.params['title'],
-        comments: this.params['comments'],
-        dateFinished: this.params['date'],
-        userId: USERID,
-      };
-      const reqSettings = {
-          data: JSON.stringify(reqData),
-          contentType: 'application/json',
-          type: 'POST',
-        };
-      $.ajax('/api/library', reqSettings)
-        .done(function(resData) {
-          context.redirect('#/dashboard/');
-          })
-        .fail(function(msg) {
-          console.log(msg);
-          const error = msg.responseJSON.message;
-          flashMessage(`Something went wrong: ${error}`, 20000);
-        });
-    });
   
   });
 
