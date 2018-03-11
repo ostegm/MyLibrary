@@ -49,7 +49,8 @@ function renderNavLinks(loggedIn=true) {
   let links;
   if (loggedIn) {
     links = [
-      {text: 'Dashboard', url: '#/dashboard/'},
+      {text: 'My Library', url: '#/dashboard/'},
+      {text: 'Add a Book', url: '#/add-book/'},
       {text: 'Sign Out', url: '#/logout/'},
     ];
   } else {
