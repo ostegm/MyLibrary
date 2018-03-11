@@ -1,5 +1,5 @@
 # MyLibrary
-A simple webapp for storing a private library of books you've read.
+A simple webapp for storing a private library of books you've read. Check out [the demo](https://arcane-meadow-16173.herokuapp.com/#/) (user: demo@test.com, pasword: 1234567890).
 
 ## Screenshots:
 
@@ -9,5 +9,5 @@ A simple webapp for storing a private library of books you've read.
 ### View your library:
 ![View your library](img/library.png)
 
-### Edit or remove a bookf rom your library:
+### Edit or remove a book from your library:
 ![edit a book in your library](img/edit.png)
