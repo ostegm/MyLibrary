@@ -44,7 +44,7 @@ form legend {
 }
 
 
-input, button[type="submit"] {
+textarea, input, button[type="submit"] {
   display: block;
   width: 100%;
   height: auto;
@@ -72,7 +72,7 @@ button[type="submit"] {
 }
 
 
-input, button[type="submit"]:focus {
+textarea, input, button[type="submit"]:focus {
  /* Restore desirable focus behavior 
  in non-webkit browsers like Firefox */
  outline: auto 2px #87ceeb;
