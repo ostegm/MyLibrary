@@ -61,7 +61,7 @@ fieldset {
 }
 
 form {
-  width: 400px;
+  width: 100%;
   padding: 40px;
   border-radius: 3px;
   background: white;
@@ -136,10 +136,7 @@ button a {
 
 
 textarea, input, button[type="submit"]:focus {
- /* Restore desirable focus behavior 
- in non-webkit browsers like Firefox */
  outline: auto 2px #87ceeb;
- /* Preseve default focus behavior in webkit browsers */
  outline: auto 5px -webkit-focus-ring-color;
  box-shadow: 0;
 }
@@ -163,7 +160,6 @@ textarea, input, button[type="submit"]:focus {
   color: #777;
 }
 
-/* footer */
 .footer {
   text-align: center;
   color: white;
@@ -183,7 +179,6 @@ textarea, input, button[type="submit"]:focus {
 
 
 #flash-message {
-  /*width:400px;*/
   min-height: 30px;
   background: #CCCCCC;
   color:#060;
@@ -204,9 +199,7 @@ textarea, input, button[type="submit"]:focus {
 }
 
 .container-wide {
-  max-width: 85%;
-  padding: 1em;
-  margin: 1em auto;
+  max-width: 100%;
 }
 
 .button-container {
@@ -214,8 +207,7 @@ textarea, input, button[type="submit"]:focus {
   margin-bottom: 30px;
 }
 
-/*//////////////////////////////////////////////////////////////////
-[ Table ]*/
+/* Table */
 
 .limiter {
   width: 100%;
@@ -235,15 +227,9 @@ textarea, input, button[type="submit"]:focus {
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  padding: 33px 30px;
 }
 
-.wrap-table100 {
-  width: 1300px;
-}
 
-/*//////////////////////////////////////////////////////////////////
-[ Table ]*/
 table {
   width: 100%;
   background-color: #fff;
@@ -251,17 +237,7 @@ table {
 
 th, td {
   font-weight: unset;
-  padding-right: 10px;
-}
-
-.column100 {
-  width: 130px;
-  padding-left: 25px;
-}
-
-.column100.column1 {
-  width: 265px;
-  padding-left: 42px;
+  /*padding-right: 10px;*/
 }
 
 .row100.head th {
@@ -310,7 +286,15 @@ th, td {
   color: #fff;
 }
 
-@media screen and (min-width: 600px) {
+@media screen and (min-width: 640px) {
+  html, body {
+    width: 100%;
+  }
+
+  form {
+    width: 50%;
+  }
+
   .nav li {
     width: 120px;
     border-bottom: none;
@@ -328,7 +312,40 @@ th, td {
   .container,
   .container-wide, 
   .books-table {
-    width: 100%l
+    width: 85%l
+  }
+
+  .container-wide {
+    padding: 1em;
+    margin: 1em auto;
+  }
+
+  .container-table100 {
+    padding: 33px 30px;
+  }
+
+  th, td {
+    padding-right: 10px;
+  }
+
+  .column100.column1 {
+    width: 20%;
+    padding-left: 22px;
+  }
+
+  .column100.column2 {
+    width: 10%;
+    padding-left: 22px;
+  }
+
+  .column100.column3 {
+    width: 10%;
+    padding-left: 22px;
+  }
+
+  .column100.column4 {
+    width: 40%;
+    padding-left: 22px;
   }
 }
 
