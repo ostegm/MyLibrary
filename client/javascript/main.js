@@ -1,4 +1,13 @@
 'use strict';
+const NEXTBUSURL = 'http://webservices.nextbus.com/service/publicXMLFeed?';
+const x2js = new X2JS();
+
+function parseJwt (token) {
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace('-', '+').replace('_', '/');
+  return JSON.parse(window.atob(base64));
+};
+
 
 function flashMessage(message, timemout=1000) {
   const template = '<div id="flash-message"><span>{{message}}</span></div>';
@@ -40,8 +49,10 @@ function setHeaderToken(token) {
   // Define our app.
   var app = $.sammy('#app', function() {
     let TOKEN = localStorage.getItem('TOKEN') || null;
+    let USERID;
     if (TOKEN) {
       console.log('Loaded token from local storage.');
+      USERID = parseJwt(TOKEN) || null;
       setHeaderToken(TOKEN);
     }
     this.use('Mustache', 'html');
@@ -59,7 +70,7 @@ function setHeaderToken(token) {
     this.get('#/login-required/', function(context) {
       context.app.swap('');
       context.render('views/login.html').appendTo(context.$element());
-      flashMessage('You must be logged in to view the dashboard.', 5000);
+      flashMessage('You must be logged in to view that page.', 5000);
     });
 
     this.get('#/dashboard/', function(context) {
@@ -116,6 +127,7 @@ function setHeaderToken(token) {
           $.ajax('/api/auth/login', reqSettings)
             .done(function(resData) {
               TOKEN = resData.authToken;
+              USERID = parseJwt(TOKEN);
               localStorage.setItem('TOKEN', TOKEN);
               setHeaderToken(TOKEN);
               context.redirect('#/dashboard/');
@@ -128,11 +140,6 @@ function setHeaderToken(token) {
         });
     });
 
-    this.get('#/protected/', function(context) {
-      context.app.swap('');
-      context.render('views/login.html').appendTo(context.$element());
-    });
-
     this.get('#/logout/', function(context) {
       TOKEN = null;
       localStorage.removeItem('TOKEN');
@@ -141,6 +148,39 @@ function setHeaderToken(token) {
       context.render('views/login.html').appendTo(context.$element());
     });
 
+    this.get('#/add-book/', function(context) {
+      if (!TOKEN) {
+        context.redirect('#/login-required/');
+      } else {
+        context.app.swap('');
+        context.render('views/add-book.html').appendTo(context.$element());
+      }     
+    });
+
+    this.post('#/add-book/', function(context) {
+      const reqData = {
+        author: this.params['author'],
+        title: this.params['title'],
+        comments: this.params['comments'],
+        dateFinished: this.params['date'],
+        userId: USERID,
+      };
+      const reqSettings = {
+          data: JSON.stringify(reqData),
+          contentType: 'application/json',
+          type: 'POST',
+        };
+      $.ajax('/api/library', reqSettings)
+        .done(function(resData) {
+          context.redirect('#/dashboard/');
+          })
+        .fail(function(msg) {
+          console.log(msg);
+          const error = msg.responseJSON.message;
+          flashMessage(`Something went wrong: ${error}`, 20000);
+        });
+    });
+  
   });
 
   $(function() {

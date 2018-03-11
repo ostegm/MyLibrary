@@ -24,7 +24,7 @@ fieldset {
   margin: 0 auto 30px;
 }
 
-.signup-form {
+form {
   width: 400px;
   padding: 40px;
   border-radius: 3px;
@@ -32,7 +32,7 @@ fieldset {
   margin: 0 auto;
 }
 
-.signup-form legend {
+form legend {
   width: 100%;
   line-height: 38px;
   font-size: 35px;
@@ -43,14 +43,8 @@ fieldset {
   margin: 0 auto 45px;
 }
 
-/* The button ultimately gets a different background
-color below, but it largely overlaps with email/password
-input styling, so we include it in the same style block, then
-override parts of it in its own declaration. */
-input[type="email"],
-input[type="password"],
-input[type="phone"],
-button[type="submit"] {
+
+textarea, input, button[type="submit"] {
   display: block;
   width: 100%;
   height: auto;
@@ -78,10 +72,7 @@ button[type="submit"] {
 }
 
 
-input[type="email"]:focus,
-input[type="password"]:focus,
-input[type="phone"]:focus,
-button[type="submit"]:focus {
+textarea, input, button[type="submit"]:focus {
  /* Restore desirable focus behavior 
  in non-webkit browsers like Firefox */
  outline: auto 2px #87ceeb;
