@@ -7,7 +7,7 @@ const jsonParser = bodyParser.json();
 
 // Post to register a new user
 router.post('/', jsonParser, (req, res) => {
-  const requiredFields = ['email', 'password', 'cellphone'];
+  const requiredFields = ['email', 'password'];
   const missingField = requiredFields.find(field => !(field in req.body));
 
   if (missingField) {
@@ -33,20 +33,6 @@ router.post('/', jsonParser, (req, res) => {
     });
   }
 
-  const numFields = ['cellphone'];
-  const nonNumField = numFields.find(
-    field => field in req.body && typeof req.body[field] !== 'number'
-  );
-
-  if (nonNumField) {
-    return res.status(422).json({
-      code: 422,
-      reason: 'ValidationError',
-      message: 'Incorrect field type: expected number',
-      location: nonNumField
-    });
-  }
-
   const explicityTrimmedFields = ['email', 'password'];
   const nonTrimmedField = explicityTrimmedFields.find(field => {
     req.body[field].trim() !== req.body[field];
@@ -64,7 +50,6 @@ router.post('/', jsonParser, (req, res) => {
   const sizedFields = {
     email: {min: 7},
     password: {min: 10, max: 72},
-    cellphone: {min: 10, max: 10}
   };
   const tooSmallField = Object.keys(sizedFields).find(
     field =>
@@ -90,7 +75,7 @@ router.post('/', jsonParser, (req, res) => {
     });
   }
 
-  let {email, password, cellphone} = req.body;
+  let {email, password} = req.body;
   return User.find({email})
     .count()
     .then(count => {
@@ -110,7 +95,6 @@ router.post('/', jsonParser, (req, res) => {
       return User.create({
         email,
         password: hash,
-        cellphone
       });
     })
     .then(user => {
